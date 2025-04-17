@@ -1,35 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>签证天数计算器</title>
+    <title>智能签证天数计算器</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>签证停留计算器</h1>
+        <h1>智能签证天数计算器</h1>
         
         <div class="input-section">
-            <h3>当前行程（离境日期可选）</h3>
+            <h3>当前行程计划</h3>
             <div class="input-group">
-                <label>入境日期：</label>
-                <input type="date" id="entryDate" required>
+                <label>本次入境日期：</label>
+                <input type="date" id="currentEntry" required>
             </div>
             <div class="input-group">
-                <label>离境日期（可选）：</label>
-                <input type="date" id="exitDate">
+                <label>计划离境日期（可选）：</label>
+                <input type="date" id="plannedExit">
             </div>
-            <button onclick="handleSubmit()">开始计算</button>
+            <button onclick="handleSubmission()">立即计算</button>
         </div>
 
-        <div class="history-section">
-            <h3>历史行程记录</h3>
-            <ul id="tripList"></ul>
-        </div>
+        <div class="result-section">
+            <div class="result-card">
+                <h4>最新计算结果</h4>
+                <p>当前入境日期：<span id="displayEntry">-</span></p>
+                <p class="recommended">建议离境日期：<span id="recommendedDate">-</span></p>
+                <p class="deadline">最晚离境日期：<span id="maxDate">-</span></p>
+                <p class="remaining">本年剩余天数：<span id="remainingDays">-</span></p>
+            </div>
 
-        <div class="result">
-            <p class="recommended">建议离境日期：<span id="recommendedDate">-</span></p>
-            <p class="deadline">最晚离境日期：<span id="maxDate">-</span></p>
-            <p class="remaining">本年度剩余天数：<span id="remainingDays">-</span></p>
+            <div class="history-section">
+                <h4>历史行程记录（按时间排序）</h4>
+                <table id="tripTable">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>入境日期</th>
+                            <th>离境日期</th>
+                            <th>停留天数</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 
