@@ -12,6 +12,24 @@ body {
     margin-bottom: 20px;
 }
 
+.history-section {
+    margin-top: 20px;
+    border-top: 1px solid #ddd;
+    padding-top: 20px;
+}
+
+#tripList {
+    list-style: none;
+    padding: 0;
+}
+
+#tripList li {
+    padding: 5px 0;
+    color: #666;
+}
+
+
+
 input[type="date"] {
     padding: 8px;
     margin-right: 10px;
