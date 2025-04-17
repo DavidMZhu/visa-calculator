@@ -1,5 +1,5 @@
 // 数据存储
-const STORAGE_KEY = 'visa_calculator_data_v2';
+const STORAGE_KEY = 'visa_calculator_data_v4';
 let historyRecords = [];
 let currentEntry = null;
 
@@ -84,28 +84,34 @@ function calculateResults() {
     let usedDays = 0;
     let currentYear = new Date().getFullYear();
 
+    // 计算年度剩余天数
     if (currentEntry) {
         currentYear = new Date(currentEntry).getFullYear();
+        historyRecords.forEach(record => {
+            const entry = new Date(record.entry);
+            const exit = new Date(record.exit);
+            
+            if (entry.getFullYear() === currentYear) {
+                const yearStart = new Date(currentYear, 0, 1);
+                const yearEnd = new Date(currentYear, 11, 31);
+                
+                const start = entry < yearStart ? yearStart : entry;
+                const end = exit > yearEnd ? yearEnd : exit;
+                
+                if (start <= end) {
+                    usedDays += calculateStayDuration(start, end);
+                }
+            }
+        });
     }
 
-    historyRecords.forEach(record => {
-        const entry = new Date(record.entry);
-        const exit = new Date(record.exit);
-        
-        if (entry.getFullYear() === currentYear) {
-            const yearStart = new Date(currentYear, 0, 1);
-            const yearEnd = new Date(currentYear, 11, 31);
-            
-            const start = entry < yearStart ? yearStart : entry;
-            const end = exit > yearEnd ? yearEnd : exit;
-            
-            if (start <= end) {
-                usedDays += calculateStayDuration(start, end);
-            }
-        }
-    });
-
     const remainingDays = Math.max(180 - usedDays, 0);
+    const totalDays365 = calculate365Days();
+
+    // 更新显示
+    document.querySelectorAll('#totalDays, #totalDaysOut').forEach(el => {
+        el.textContent = totalDays365;
+    });
 
     if (currentEntry) {
         document.getElementById('inCountryResult').style.display = 'block';
@@ -116,10 +122,10 @@ function calculateResults() {
         const recDays = Math.min(70, remainingDays);
 
         const maxExit = new Date(entryDate);
-        maxExit.setDate(entryDate.getDate() + maxDays - 1);
+        maxExit.setDate(entryDate.getDate() + maxDays);
         
         const recExit = new Date(entryDate);
-        recExit.setDate(entryDate.getDate() + recDays - 1);
+        recExit.setDate(entryDate.getDate() + recDays);
 
         document.getElementById('currentEntryDisplay').textContent = currentEntry;
         document.getElementById('recommendedDate').textContent = formatDate(recExit);
@@ -132,10 +138,46 @@ function calculateResults() {
     }
 }
 
-// 辅助函数
+// 计算过去365天停留天数
+function calculate365Days() {
+    const today = new Date();
+    const oneYearAgo = new Date(today);
+    oneYearAgo.setDate(today.getDate() - 365);
+
+    let total = 0;
+
+    // 计算历史记录
+    historyRecords.forEach(record => {
+        const entry = new Date(record.entry);
+        const exit = new Date(record.exit);
+        
+        if (exit > oneYearAgo) {
+            const start = entry < oneYearAgo ? oneYearAgo : entry;
+            const end = exit > today ? today : exit;
+            
+            if (start <= end) {
+                total += calculateStayDuration(start, end);
+            }
+        }
+    });
+
+    // 计算当前行程
+    if (currentEntry) {
+        const entryDate = new Date(currentEntry);
+        if (entryDate > oneYearAgo) {
+            const endDate = new Date();
+            const start = entryDate < oneYearAgo ? oneYearAgo : entryDate;
+            total += calculateStayDuration(start, endDate);
+        }
+    }
+
+    return total;
+}
+
+// 精确计算停留天数
 function calculateStayDuration(startDate, endDate) {
     const timeDiff = endDate.getTime() - startDate.getTime();
-    return Math.ceil(timeDiff / 86400000) + 1;
+    return Math.ceil(timeDiff / 86400000);
 }
 
 function formatDate(date) {
