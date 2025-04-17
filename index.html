@@ -1,41 +1,58 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>智能签证天数计算器</title>
+    <title>签证停留计算器</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>智能签证天数计算器</h1>
+        <h1>签证停留智能计算器</h1>
         
+        <!-- 历史记录输入区 -->
         <div class="input-section">
-            <h3>当前行程计划</h3>
+            <h3>添加历史行程</h3>
             <div class="input-group">
-                <label>本次入境日期：</label>
-                <input type="date" id="currentEntry" required>
+                <label>历史入境日期：</label>
+                <input type="date" id="historyEntry">
             </div>
             <div class="input-group">
-                <label>计划离境日期（可选）：</label>
-                <input type="date" id="plannedExit">
+                <label>历史离境日期：</label>
+                <input type="date" id="historyExit">
             </div>
-            <button onclick="handleSubmission()">立即计算</button>
+            <button onclick="addHistory()">添加历史记录</button>
         </div>
 
+        <!-- 当前状态输入区 -->
+        <div class="current-section">
+            <h3>当前入境状态</h3>
+            <div class="input-group">
+                <label>本次入境日期：</label>
+                <input type="date" id="currentEntry">
+                <button onclick="setCurrent()" class="secondary">设置当前状态</button>
+            </div>
+        </div>
+
+        <!-- 结果显示区 -->
         <div class="result-section">
             <div class="result-card">
-                <h4>最新计算结果</h4>
-                <p>当前入境日期：<span id="displayEntry">-</span></p>
-                <p class="recommended">建议离境日期：<span id="recommendedDate">-</span></p>
-                <p class="deadline">最晚离境日期：<span id="maxDate">-</span></p>
-                <p class="remaining">本年剩余天数：<span id="remainingDays">-</span></p>
+                <h4>实时计算结果</h4>
+                <div id="inCountryResult">
+                    <p>当前入境日期：<span id="currentEntryDisplay">-</span></p>
+                    <p class="recommended">建议离境日期：<span id="recommendedDate">-</span></p>
+                    <p class="deadline">最晚离境日期：<span id="maxDate">-</span></p>
+                </div>
+                <div id="outCountryResult">
+                    <p class="remaining">本年度剩余天数：<span id="remainingDays">-</span></p>
+                </div>
             </div>
 
+            <!-- 历史记录展示 -->
             <div class="history-section">
-                <h4>历史行程记录（按时间排序）</h4>
+                <h4>历史行程记录</h4>
                 <table id="tripTable">
                     <thead>
                         <tr>
-                            <th>序号</th>
+                            <th>类型</th>
                             <th>入境日期</th>
                             <th>离境日期</th>
                             <th>停留天数</th>
