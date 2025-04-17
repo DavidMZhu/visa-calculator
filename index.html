@@ -9,21 +9,27 @@
         <h1>签证停留计算器</h1>
         
         <div class="input-section">
-            <h3>新增行程</h3>
-            <input type="date" id="entryDate">
-            <input type="date" id="exitDate">
-            <button onclick="addTrip()">添加行程</button>
+            <h3>当前行程（离境日期可选）</h3>
+            <div class="input-group">
+                <label>入境日期：</label>
+                <input type="date" id="entryDate" required>
+            </div>
+            <div class="input-group">
+                <label>离境日期（可选）：</label>
+                <input type="date" id="exitDate">
+            </div>
+            <button onclick="handleSubmit()">开始计算</button>
         </div>
 
         <div class="history-section">
-            <h3>历史行程</h3>
+            <h3>历史行程记录</h3>
             <ul id="tripList"></ul>
         </div>
 
         <div class="result">
-            <p>建议离境日期：<span id="recommendedDate">-</span></p>
-            <p>最晚离境日期：<span id="maxDate">-</span></p>
-            <p>剩余可用天数：<span id="remainingDays">-</span></p>
+            <p class="recommended">建议离境日期：<span id="recommendedDate">-</span></p>
+            <p class="deadline">最晚离境日期：<span id="maxDate">-</span></p>
+            <p class="remaining">本年度剩余天数：<span id="remainingDays">-</span></p>
         </div>
     </div>
 
