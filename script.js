@@ -65,6 +65,38 @@ function calculateAnnualUsage(history, currentEntry) {
     return 180 - usedDays;
 }
 
+function addTrip() {
+    const entry = document.getElementById('entryDate').value;
+    const exit = document.getElementById('exitDate').value;
+    
+    if (!entry || !exit) {
+        alert("请填写完整日期");
+        return;
+    }
+    
+    if (new Date(exit) < new Date(entry)) {
+        alert("离境日期不能早于入境日期");
+        return;
+    }
+
+    trips.push({ entry, exit });
+    updateHistoryList();
+    calculate();
+}
+
+function updateHistoryList() {
+    const list = document.getElementById('tripList');
+    list.innerHTML = trips.map(trip => 
+        `<li>${trip.entry} 至 ${trip.exit}</li>`
+    ).join('');
+}
+
+
+
+
+
+
+
 // 日期格式化辅助函数
 function formatDate(date) {
     return date.toISOString().split('T')[0];
