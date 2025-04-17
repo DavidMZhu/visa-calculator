@@ -1,94 +1,115 @@
-let historyTrips = [];
+let travelHistory = [];
+let currentTrip = null;
 
-function handleSubmit() {
-    const entry = document.getElementById('entryDate').value;
-    const exit = document.getElementById('exitDate').value;
+function handleSubmission() {
+    const entryInput = document.getElementById('currentEntry').value;
+    const exitInput = document.getElementById('plannedExit').value;
 
-    // 必须填写入境日期
-    if (!entry) {
-        alert("请填写入境日期");
+    if (!entryInput) {
+        alert("请输入本次入境日期");
         return;
     }
 
-    // 验证日期顺序
-    if (exit && new Date(exit) < new Date(entry)) {
-        alert("离境日期不能早于入境日期");
-        return;
+    // 保存当前行程
+    currentTrip = {
+        entry: entryInput,
+        exit: exitInput || null
+    };
+
+    // 保存完整行程到历史
+    if (exitInput) {
+        if (new Date(exitInput) < new Date(entryInput)) {
+            alert("离境日期不能早于入境日期");
+            return;
+        }
+        travelHistory.push({ entry: entryInput, exit: exitInput });
+        travelHistory.sort((a, b) => new Date(a.entry) - new Date(b.entry));
     }
 
-    // 保存完整行程记录
-    if (entry && exit) {
-        historyTrips.push({ entry, exit });
-        updateHistoryList();
-    }
-
-    // 执行计算
-    calculateDates(entry);
-    updateRemainingDays(entry);
+    updateDisplay();
+    calculateDates();
     clearInputs();
 }
 
-function updateHistoryList() {
-    const list = document.getElementById('tripList');
-    list.innerHTML = historyTrips.map((trip, index) => 
-        `<li>#${index + 1} ${trip.entry} 至 ${trip.exit}</li>`
-    ).join('');
-}
-
-function calculateDates(entryDate) {
-    const recommended = new Date(entryDate);
-    recommended.setDate(recommended.getDate() + 69);
+function calculateDates() {
+    const entryDate = new Date(currentTrip.entry);
+    const remainingDays = calculateRemainingDays(entryDate);
     
-    const deadline = new Date(entryDate);
-    deadline.setDate(deadline.getDate() + 89);
-
-    document.getElementById('recommendedDate').textContent = formatDate(recommended);
-    document.getElementById('maxDate').textContent = formatDate(deadline);
-}
-
-function updateRemainingDays(currentEntry) {
-    const remaining = calculateAnnualUsage(historyTrips, currentEntry);
-    const displayText = remaining > 0 ? 
-        `${remaining} 天 (本年已用 ${180 - remaining} 天)` : 
-        '<span style="color:red">已超过180天限制！</span>';
+    // 计算理论最晚离境日
+    const maxDaysAvailable = Math.min(90, remainingDays);
+    const maxExitDate = new Date(entryDate);
+    maxExitDate.setDate(entryDate.getDate() + maxDaysAvailable - 1);
     
-    document.getElementById('remainingDays').innerHTML = displayText;
+    // 计算建议离境日
+    const recommendedDays = Math.min(70, remainingDays);
+    const recommendedDate = new Date(entryDate);
+    recommendedDate.setDate(entryDate.getDate() + recommendedDays - 1);
+
+    document.getElementById('recommendedDate').textContent = formatDate(recommendedDate);
+    document.getElementById('maxDate').textContent = formatDate(maxExitDate);
+    document.getElementById('remainingDays').textContent = `${remainingDays} 天`;
 }
 
-function calculateAnnualUsage(history, currentEntry) {
+function calculateRemainingDays(currentEntry) {
     const currentYear = new Date(currentEntry).getFullYear();
     let usedDays = 0;
 
-    history.forEach(trip => {
+    // 计算历史使用天数
+    travelHistory.forEach(trip => {
         const entry = new Date(trip.entry);
         const exit = new Date(trip.exit);
         
-        const yearStart = new Date(currentYear, 0, 1);
-        const yearEnd = new Date(currentYear, 11, 31);
-        
-        const start = entry < yearStart ? yearStart : entry;
-        const end = exit > yearEnd ? yearEnd : exit;
-        
-        if(start <= end) {
-            const diff = end.getTime() - start.getTime();
-            usedDays += Math.ceil(diff / 86400000) + 1;
+        // 仅计算同一年份
+        if (entry.getFullYear() === currentYear) {
+            const start = entry < new Date(currentYear, 0, 1) ? new Date(currentYear, 0, 1) : entry;
+            const end = exit > new Date(currentYear, 11, 31) ? new Date(currentYear, 11, 31) : exit;
+            
+            if (start <= end) {
+                const diff = end.getTime() - start.getTime();
+                usedDays += Math.ceil(diff / 86400000) + 1;
+            }
         }
     });
 
-    return Math.max(180 - usedDays, 0);
+    // 计算当前行程可能增加的天数
+    const potentialDays = currentTrip.exit ? 
+        calculateStayDuration(new Date(currentTrip.entry), new Date(currentTrip.exit)) : 0;
+
+    return Math.max(180 - (usedDays + potentialDays), 0);
+}
+
+function calculateStayDuration(startDate, endDate) {
+    const timeDiff = endDate.getTime() - startDate.getTime();
+    return Math.ceil(timeDiff / 86400000) + 1;
+}
+
+function updateDisplay() {
+    // 显示当前入境日期
+    document.getElementById('displayEntry').textContent = currentTrip.entry;
+    
+    // 更新历史表格
+    const tbody = document.querySelector('#tripTable tbody');
+    tbody.innerHTML = travelHistory.map((trip, index) => `
+        <tr>
+            <td>${index + 1}</td>
+            <td>${trip.entry}</td>
+            <td>${trip.exit}</td>
+            <td>${calculateStayDuration(new Date(trip.entry), new Date(trip.exit))} 天</td>
+        </tr>
+    `).join('');
 }
 
 function formatDate(date) {
-    return date.toLocaleDateString('zh-CN', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
+    return date.toLocaleDateString('zh-CN', { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit' 
     }).replace(/\//g, '-');
 }
 
 function clearInputs() {
-    document.getElementById('entryDate').value = '';
-    document.getElementById('exitDate').value = '';
+    document.getElementById('currentEntry').value = '';
+    document.getElementById('plannedExit').value = '';
 }
 
 // 初始化
