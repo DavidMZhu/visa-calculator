@@ -86,6 +86,16 @@ button.secondary:hover {
     background: #5a6268;
 }
 
+button.danger {
+    background: #dc3545;
+    margin-top: 15px;
+    width: 100%;
+}
+
+button.danger:hover {
+    background: #bb2d3b;
+}
+
 /* 结果展示区 */
 .result-section {
     display: grid;
@@ -118,6 +128,12 @@ button.secondary:hover {
 .recommended { color: #27ae60; }
 .deadline { color: #e74c3c; }
 .remaining { color: #7f8c8d; }
+
+.tip {
+    color: #95a5a6;
+    font-size: 0.9em;
+    margin-left: 10px;
+}
 
 /* 历史记录表格 */
 .history-section {
@@ -155,9 +171,19 @@ tr.current {
     font-weight: bold;
 }
 
-/* 状态显示控制 */
-#inCountryResult { display: none; }
-#outCountryResult { display: block; }
+/* 危险操作区 */
+.danger-zone {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 2px solid #eee;
+}
+
+.warning-tip {
+    color: #e74c3c;
+    font-size: 0.9em;
+    margin-top: 10px;
+    text-align: center;
+}
 
 /* 响应式设计 */
 @media (max-width: 768px) {
