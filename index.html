@@ -8,7 +8,6 @@
     <div class="container">
         <h1>签证停留计算器</h1>
         
-        <!-- 输入区域 -->
         <div class="input-section">
             <h3>新增行程</h3>
             <input type="date" id="entryDate">
@@ -16,14 +15,11 @@
             <button onclick="addTrip()">添加行程</button>
         </div>
 
-        <!-- 在.input-section下方添加 -->
-<div class="history-section">
-    <h3>历史行程</h3>
-    <ul id="tripList"></ul>
-</div>
+        <div class="history-section">
+            <h3>历史行程</h3>
+            <ul id="tripList"></ul>
+        </div>
 
-
-        <!-- 结果显示 -->
         <div class="result">
             <p>本次最晚离境日：<span id="maxDate">-</span></p>
             <p>剩余可用天数：<span id="remainingDays">-</span></p>
@@ -33,4 +29,3 @@
     <script src="script.js"></script>
 </body>
 </html>
-
