@@ -1,79 +1,89 @@
-let trips = [];
+let historyTrips = [];
 
-function addTrip() {
+function handleSubmit() {
     const entry = document.getElementById('entryDate').value;
     const exit = document.getElementById('exitDate').value;
-    
+
     // 必须填写入境日期
     if (!entry) {
-        alert("请至少填写入境日期");
+        alert("请填写入境日期");
         return;
     }
 
-    // 如果有填写离境日期
-    if (exit) {
-        const entryDate = new Date(entry);
-        const exitDate = new Date(exit);
-        
-        if (exitDate < entryDate) {
-            alert("离境日期不能早于入境日期");
-            return;
-        }
+    // 验证日期顺序
+    if (exit && new Date(exit) < new Date(entry)) {
+        alert("离境日期不能早于入境日期");
+        return;
+    }
 
-        trips.push({ entry, exit });
+    // 保存完整行程记录
+    if (entry && exit) {
+        historyTrips.push({ entry, exit });
         updateHistoryList();
     }
 
-    calculate(entry);
+    // 执行计算
+    calculateDates(entry);
+    updateRemainingDays(entry);
     clearInputs();
 }
 
 function updateHistoryList() {
     const list = document.getElementById('tripList');
-    list.innerHTML = trips.map((trip, index) => 
+    list.innerHTML = historyTrips.map((trip, index) => 
         `<li>#${index + 1} ${trip.entry} 至 ${trip.exit}</li>`
     ).join('');
 }
 
-function calculate(currentEntry) {
-    // 计算建议和最晚日期
-    const recommendedDate = calculateRecommendedStay(currentEntry);
-    const maxExitDate = calculateMaxStay(currentEntry);
+function calculateDates(entryDate) {
+    const recommended = new Date(entryDate);
+    recommended.setDate(recommended.getDate() + 69);
     
-    // 更新基础信息
-    document.getElementById('recommendedDate').textContent = recommendedDate;
-    document.getElementById('maxDate').textContent = maxExitDate;
+    const deadline = new Date(entryDate);
+    deadline.setDate(deadline.getDate() + 89);
+
+    document.getElementById('recommendedDate').textContent = formatDate(recommended);
+    document.getElementById('maxDate').textContent = formatDate(deadline);
+}
+
+function updateRemainingDays(currentEntry) {
+    const remaining = calculateAnnualUsage(historyTrips, currentEntry);
+    const displayText = remaining > 0 ? 
+        `${remaining} 天 (本年已用 ${180 - remaining} 天)` : 
+        '<span style="color:red">已超过180天限制！</span>';
     
-    // 仅当有历史记录时计算剩余天数
-    if (trips.length > 0) {
-        const remainingDays = calculateAnnualUsage(trips, currentEntry);
-        document.getElementById('remainingDays').textContent = 
-            remainingDays > 0 ? `${remainingDays} 天` : '<span style="color:red">已超限！</span>';
-    } else {
-        document.getElementById('remainingDays').textContent = "请添加历史行程";
-    }
+    document.getElementById('remainingDays').innerHTML = displayText;
 }
 
-// 新增建议日期计算
-function calculateRecommendedStay(entryDate) {
-    const date = new Date(entryDate);
-    date.setDate(date.getDate() + 69);
-    return formatDate(date);
-}
-
-function calculateMaxStay(entryDate) {
-    const date = new Date(entryDate);
-    date.setDate(date.getDate() + 89);
-    return formatDate(date);
-}
-
-// 保持原有calculateAnnualUsage函数不变
 function calculateAnnualUsage(history, currentEntry) {
-    // ... 保持原有实现不变 ...
+    const currentYear = new Date(currentEntry).getFullYear();
+    let usedDays = 0;
+
+    history.forEach(trip => {
+        const entry = new Date(trip.entry);
+        const exit = new Date(trip.exit);
+        
+        const yearStart = new Date(currentYear, 0, 1);
+        const yearEnd = new Date(currentYear, 11, 31);
+        
+        const start = entry < yearStart ? yearStart : entry;
+        const end = exit > yearEnd ? yearEnd : exit;
+        
+        if(start <= end) {
+            const diff = end.getTime() - start.getTime();
+            usedDays += Math.ceil(diff / 86400000) + 1;
+        }
+    });
+
+    return Math.max(180 - usedDays, 0);
 }
 
 function formatDate(date) {
-    // ... 保持原有实现不变 ...
+    return date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+    }).replace(/\//g, '-');
 }
 
 function clearInputs() {
