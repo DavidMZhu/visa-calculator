@@ -1,1 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>签证天数计算器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>签证停留计算器</h1>
+        
+        <!-- 输入区域 -->
+        <div class="input-section">
+            <h3>新增行程</h3>
+            <input type="date" id="entryDate">
+            <input type="date" id="exitDate">
+            <button onclick="addTrip()">添加行程</button>
+        </div>
+
+        <!-- 结果显示 -->
+        <div class="result">
+            <p>本次最晚离境日：<span id="maxDate">-</span></p>
+            <p>剩余可用天数：<span id="remainingDays">-</span></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
 
