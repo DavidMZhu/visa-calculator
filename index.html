@@ -43,9 +43,11 @@
                         <small class="tip">(建议单次停留不超过70天)</small>
                     </p>
                     <p class="deadline">最晚离境日期：<span id="maxDate">-</span></p>
+                    <p class="total-days">过去365天累计停留：<span id="totalDays">0</span>天</p>
                 </div>
                 <div id="outCountryResult">
                     <p class="remaining">本年度剩余天数：<span id="remainingDays">-</span></p>
+                    <p class="total-days">过去365天累计停留：<span id="totalDaysOut">0</span>天</p>
                 </div>
             </div>
 
@@ -68,7 +70,8 @@
 
         <!-- 危险操作区 -->
         <div class="danger-zone">
-            <button onclick="clearData()" class="danger">重置计算器</button>
+            <button onclick="clearData()" class="danger">清空所有数据</button>
+            <p class="warning-tip">警告：此操作将永久删除所有存储数据</p>
         </div>
     </div>
 
