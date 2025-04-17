@@ -1,91 +1,114 @@
 body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 0 20px;
-    background: #f0f2f5;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    max-width: 1000px;
+    margin: 30px auto;
+    padding: 0 25px;
+    background: #f5f7fa;
+    color: #333;
 }
 
 .container {
     background: white;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    padding: 35px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
 }
 
 .input-section {
-    background: #f8f9fa;
+    background: #f8f9ff;
     padding: 25px;
-    border-radius: 10px;
-    margin-bottom: 25px;
+    border-radius: 12px;
+    margin-bottom: 30px;
 }
 
 .input-group {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .input-group label {
     display: block;
-    margin-bottom: 8px;
-    color: #495057;
-    font-weight: 500;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #2c3e50;
 }
 
 input[type="date"] {
     width: 100%;
-    padding: 10px;
-    border: 2px solid #dee2e6;
-    border-radius: 6px;
+    padding: 12px;
+    border: 2px solid #e0e3eb;
+    border-radius: 8px;
     font-size: 16px;
+    transition: border-color 0.3s;
+}
+
+input[type="date"]:focus {
+    border-color: #4a90e2;
+    outline: none;
 }
 
 button {
     background: #4a90e2;
     color: white;
     border: none;
-    padding: 12px 24px;
-    border-radius: 6px;
+    padding: 14px 28px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     width: 100%;
-    transition: background 0.3s;
+    transition: all 0.3s;
 }
 
 button:hover {
     background: #357abd;
+    transform: translateY(-1px);
 }
+
+.result-section {
+    display: grid;
+    gap: 30px;
+}
+
+.result-card {
+    background: #f8f9ff;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.result-card h4 {
+    margin-top: 0;
+    color: #2c3e50;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 15px;
+}
+
+.recommended { color: #27ae60; }
+.deadline { color: #e74c3c; }
+.remaining { color: #7f8c8d; }
 
 .history-section {
-    margin: 25px 0;
-    padding: 20px;
-    background: #fff9f2;
-    border-radius: 8px;
+    background: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.05);
 }
 
-#tripList {
-    list-style: none;
-    padding: 0;
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
 }
 
-#tripList li {
-    padding: 10px;
-    margin: 8px 0;
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 6px;
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
 }
 
-.result {
-    padding: 20px;
-    background: #f8f9fa;
-    border-radius: 8px;
+th {
+    background: #f8f9ff;
+    font-weight: 600;
 }
 
-.result p {
-    margin: 15px 0;
-    font-size: 17px;
+tr:hover {
+    background-color: #f5f6fa;
 }
-
-.recommended { color: #28a745; }
-.deadline { color: #dc3545; }
-.remaining { color: #6c757d; }
