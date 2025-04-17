@@ -1,6 +1,43 @@
 // 数据存储
-let historyRecords = [];  // 历史出入境记录
-let currentEntry = null;  // 当前入境日期
+const STORAGE_KEY = 'visa_calculator_data_v2';
+let historyRecords = [];
+let currentEntry = null;
+
+// 初始化加载
+function loadFromStorage() {
+    const data = localStorage.getItem(STORAGE_KEY);
+    if (data) {
+        try {
+            const parsed = JSON.parse(data);
+            historyRecords = parsed.history || [];
+            currentEntry = parsed.current || null;
+        } catch (e) {
+            console.error('本地存储数据损坏，已重置');
+            clearStorage();
+        }
+    }
+    updateDisplay();
+    calculateResults();
+}
+
+// 保存数据
+function saveToStorage() {
+    const data = {
+        history: historyRecords,
+        current: currentEntry,
+        timestamp: new Date().getTime()
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// 清空数据
+function clearStorage() {
+    localStorage.removeItem(STORAGE_KEY);
+    historyRecords = [];
+    currentEntry = null;
+    updateDisplay();
+    calculateResults();
+}
 
 // 添加历史记录
 function addHistory() {
@@ -23,9 +60,10 @@ function addHistory() {
     updateDisplay();
     calculateResults();
     clearHistoryInput();
+    saveToStorage();
 }
 
-// 设置当前状态
+// 设置本次入境
 function setCurrent() {
     const newEntry = document.getElementById('currentEntry').value;
     
@@ -34,30 +72,32 @@ function setCurrent() {
         return;
     }
 
-    // 保留原有当前状态（需要显式修改）
-    if (!currentEntry) {
-        currentEntry = newEntry;
-    }
-    
+    currentEntry = newEntry;
+    document.getElementById('currentEntry').value = '';
     updateDisplay();
     calculateResults();
+    saveToStorage();
 }
 
 // 核心计算逻辑
 function calculateResults() {
-    const currentYear = new Date().getFullYear();
     let usedDays = 0;
+    let currentYear = new Date().getFullYear();
 
-    // 计算历史使用天数
+    if (currentEntry) {
+        currentYear = new Date(currentEntry).getFullYear();
+    }
+
     historyRecords.forEach(record => {
         const entry = new Date(record.entry);
         const exit = new Date(record.exit);
         
         if (entry.getFullYear() === currentYear) {
-            const start = entry < new Date(currentYear, 0, 1) ? 
-                new Date(currentYear, 0, 1) : entry;
-            const end = exit > new Date(currentYear, 11, 31) ? 
-                new Date(currentYear, 11, 31) : exit;
+            const yearStart = new Date(currentYear, 0, 1);
+            const yearEnd = new Date(currentYear, 11, 31);
+            
+            const start = entry < yearStart ? yearStart : entry;
+            const end = exit > yearEnd ? yearEnd : exit;
             
             if (start <= end) {
                 usedDays += calculateStayDuration(start, end);
@@ -65,12 +105,9 @@ function calculateResults() {
         }
     });
 
-    // 计算剩余天数
     const remainingDays = Math.max(180 - usedDays, 0);
-    
-    // 更新显示
+
     if (currentEntry) {
-        // 在境内状态
         document.getElementById('inCountryResult').style.display = 'block';
         document.getElementById('outCountryResult').style.display = 'none';
         
@@ -87,8 +124,8 @@ function calculateResults() {
         document.getElementById('currentEntryDisplay').textContent = currentEntry;
         document.getElementById('recommendedDate').textContent = formatDate(recExit);
         document.getElementById('maxDate').textContent = formatDate(maxExit);
+        document.getElementById('remainingDays').textContent = remainingDays;
     } else {
-        // 在境外状态
         document.getElementById('inCountryResult').style.display = 'none';
         document.getElementById('outCountryResult').style.display = 'block';
         document.getElementById('remainingDays').textContent = remainingDays;
@@ -109,6 +146,7 @@ function formatDate(date) {
     }).replace(/\//g, '-');
 }
 
+// 界面更新
 function updateDisplay() {
     const tbody = document.querySelector('#tripTable tbody');
     tbody.innerHTML = historyRecords.map(record => `
@@ -130,6 +168,7 @@ function updateDisplay() {
             </tr>
         `;
     }
+    setTimeout(calculateResults, 0);
 }
 
 function clearHistoryInput() {
@@ -137,6 +176,16 @@ function clearHistoryInput() {
     document.getElementById('historyExit').value = '';
 }
 
+function clearData() {
+    if (confirm('确定要永久删除所有数据吗？')) {
+        clearStorage();
+    }
+}
+
 // 初始化
-document.getElementById('currentEntry').value = '';
-clearHistoryInput();
+function init() {
+    loadFromStorage();
+    document.getElementById('currentEntry').value = '';
+    clearHistoryInput();
+}
+init();
