@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>签证停留计算器</title>
+    <title>智能签证停留计算器</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>签证停留智能计算器</h1>
-        
+        <h1>智能签证停留计算器</h1>
+
         <!-- 历史记录输入区 -->
         <div class="input-section">
             <h3>添加历史行程</h3>
@@ -24,11 +24,11 @@
 
         <!-- 当前状态输入区 -->
         <div class="current-section">
-            <h3>当前入境状态</h3>
+            <h3>本次入境信息</h3>
             <div class="input-group">
                 <label>本次入境日期：</label>
                 <input type="date" id="currentEntry">
-                <button onclick="setCurrent()" class="secondary">设置当前状态</button>
+                <button onclick="setCurrent()" class="secondary">设为本次入境</button>
             </div>
         </div>
 
@@ -38,7 +38,10 @@
                 <h4>实时计算结果</h4>
                 <div id="inCountryResult">
                     <p>当前入境日期：<span id="currentEntryDisplay">-</span></p>
-                    <p class="recommended">建议离境日期：<span id="recommendedDate">-</span></p>
+                    <p class="recommended">
+                        建议离境日期：<span id="recommendedDate">-</span>
+                        <small class="tip">(建议单次停留不超过70天)</small>
+                    </p>
                     <p class="deadline">最晚离境日期：<span id="maxDate">-</span></p>
                 </div>
                 <div id="outCountryResult">
@@ -61,6 +64,12 @@
                     <tbody></tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- 危险操作区 -->
+        <div class="danger-zone">
+            <button onclick="clearData()" class="danger">清空所有数据</button>
+            <p class="warning-tip">警告：此操作将永久删除所有存储数据</p>
         </div>
     </div>
 
